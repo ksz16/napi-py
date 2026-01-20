@@ -13,10 +13,11 @@ class InMemoryIO(py7zr.io.Py7zIO):
         self._length = 0
         self._lock = threading.Lock()
 
-    def write(self, data: bytes) -> None:
+    def write(self, data: bytes) -> int:
         with self._lock:
             self._buf.extend(data)
             self._length += len(data)
+            return len(data)
 
     def read(self, size: Optional[int] = None) -> bytes:
         return b""
