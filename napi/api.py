@@ -1,7 +1,6 @@
 import os
 from urllib import request
 
-
 def _cipher(z):
     idx = [0xE, 0x3, 0x6, 0x8, 0x2]
     mul = [2, 2, 5, 4, 3]
@@ -19,13 +18,18 @@ def _cipher(z):
 
     return "".join(b)
 
-
 def _build_url(movie_hash):
     return "http://napiprojekt.pl/unit_napisy/dl.php?l=PL&f={}&t={}&v=other&kolejka=false&nick=&pass=&napios={}".format(
         movie_hash, _cipher(movie_hash), os.name
     )
 
-
 def download_for(movie_hash: str) -> bytes:
     the_url = _build_url(movie_hash)
-    return request.urlopen(the_url).read()
+    
+    req = request.Request(
+        the_url, 
+        headers={'User-Agent': 'Mozilla/5.0'}
+    )
+    
+    with request.urlopen(req) as response:
+        return response.read()
