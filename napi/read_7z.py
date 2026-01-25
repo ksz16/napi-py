@@ -66,7 +66,9 @@ def un7zip_api_response(content_7z: bytes, target_filename: Optional[str] = None
         first_product = next(iter(factory.products.values()))
         return first_product.getvalue()
 
-    except (py7zr.exceptions.Bad7zFile,
-            py7zr.exceptions.PasswordRequired,
-            py7zr.exceptions.UnsupportedCompressionMethodError):
+    except py7zr.exceptions.UnsupportedCompressionMethodError:
+        if content_7z and (b"1\r\n" in content_7z or b"00:00:" in content_7z or b"{" in content_7z):
+            return content_7z
+        return None
+    except (py7zr.exceptions.Bad7zFile, py7zr.exceptions.PasswordRequired):
         return None
